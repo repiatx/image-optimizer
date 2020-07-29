@@ -1,8 +1,8 @@
 {
-    "name": "spatie/image-optimizer",
+    "name": "repiatx/image-optimizer",
     "description": "Easily optimize images using PHP",
     "keywords": [
-        "spatie",
+        "repiatx",
         "image-optimizer"
     ],
     "homepage": "https://github.com/spatie/image-optimizer",
