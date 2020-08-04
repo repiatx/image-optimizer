@@ -2,9 +2,9 @@
 
 namespace Spatie\ImageOptimizer\Optimizers;
 
-use Spatie\ImageOptimizer\Optimizer;
+use Spatie\ImageOptimizer\IOptimizer;
 
-abstract class BaseOptimizer implements Optimizer
+abstract class BaseOptimizer implements IOptimizer
 {
     public $options = [];
 

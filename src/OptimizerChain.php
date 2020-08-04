@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 
 class OptimizerChain
 {
-    /* @var \Spatie\ImageOptimizer\Optimizer[] */
+    /* @var \Spatie\ImageOptimizer\IOptimizer[] */
     protected $optimizers = [];
 
     /** @var \Psr\Log\LoggerInterface */
@@ -26,7 +26,7 @@ class OptimizerChain
         return $this->optimizers;
     }
 
-    public function addOptimizer(Optimizer $optimizer)
+    public function addOptimizer(IOptimizer $optimizer)
     {
         $this->optimizers[] = $optimizer;
 
@@ -61,26 +61,29 @@ class OptimizerChain
         return $this;
     }
 
-    public function optimize(string $pathToImage, string $pathToOutput = null)
+    /**
+     * @param string $pathToImage
+     * @param string|null $pathToOutput
+     * @return IOutput[] OutputObject array
+     */
+    public function optimize(string $pathToImage, string $pathToOutput = null): array
     {
-        if ($pathToOutput) {
-            copy($pathToImage, $pathToOutput);
-
-            $pathToImage = $pathToOutput;
-        }
+        $outputObjects = [];
 
         $image = new Image($pathToImage);
 
         $this->logger->info("Start optimizing {$pathToImage}");
 
         foreach ($this->optimizers as $optimizer) {
-            $this->applyOptimizer($optimizer, $image);
+            $outputObjects[] = $this->applyOptimizer($optimizer, $image);
         }
+
+        return $outputObjects;
     }
 
-    protected function applyOptimizer(Optimizer $optimizer, Image $image)
+    protected function applyOptimizer(IOptimizer $optimizer, Image $image)
     {
-        if (! $optimizer->canHandle($image)) {
+        if ( ! $optimizer->canHandle($image)) {
             return;
         }
 
@@ -101,11 +104,13 @@ class OptimizerChain
             ->run();
 
         $this->logResult($process);
+
+        return $optimizer->parseOutput($process->getOutput());
     }
 
     protected function logResult(Process $process)
     {
-        if (! $process->isSuccessful()) {
+        if ( ! $process->isSuccessful()) {
             $this->logger->error("Process errored with `{$process->getErrorOutput()}`");
 
             return;

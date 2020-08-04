@@ -2,7 +2,9 @@
 
 namespace Spatie\ImageOptimizer;
 
-interface Optimizer
+use Symfony\Component\Process\Process;
+
+interface IOptimizer
 {
     /**
      * Returns the name of the binary to be executed.
@@ -44,4 +46,12 @@ interface Optimizer
      * @return string
      */
     public function getCommand(): string;
+
+    /**
+     * Returns Output IOutput object which has lot's of information about output.
+     *
+     * @param $output string Process->getOutput() result
+     * @return IOutput
+     */
+    public function parseOutput($output): IOutput;
 }
