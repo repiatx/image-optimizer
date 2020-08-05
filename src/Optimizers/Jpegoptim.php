@@ -28,6 +28,12 @@ class Jpegoptim extends BaseOptimizer
 
     public function setOutputPath($outputPath): self
     {
+        if ( ! is_dir($outputPath)) {
+            echo 'Path does not exist';
+            http_response_code(400);
+            die();
+        }
+
         $this->options[] = '-d ' . $outputPath;
         return $this;
     }
